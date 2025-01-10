@@ -12,13 +12,20 @@ const Register = () => {
   const [error, setError] = useState("");
 
   const handleRegister = async() => {
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    const existingUser = users.some((user)=>user.email===email);
+
+    if(existingUser){
+      setError("User with this email already exist");
+      return;
+    }
     if (password !== confirmPassword) {
       setError("Passwords does not match");
       return; 
     };
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = { name, email, password:hashedPassword };
-    let users = JSON.parse(localStorage.getItem("users")) || [];
+    const newUser = { name, email, password:hashedPassword };    
     users.push(newUser);
     localStorage.setItem("users", JSON.stringify(users));
     navigate("/login");
